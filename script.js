@@ -22,7 +22,10 @@ let orders = [
     { id: 2, customer: "María García", date: "2023-05-16", status: "Pendiente", items: [{ productId: 2, quantity: 3 }, { productId: 5, quantity: 2 }] },
     { id: 3, customer: "Carlos Rodríguez", date: "2023-05-17", status: "En proceso", items: [{ productId: 4, quantity: 1 }, { productId: 7, quantity: 2 }] },
     { id: 4, customer: "Ana Martínez", date: "2023-05-18", status: "Completado", items: [{ productId: 6, quantity: 5 }, { productId: 8, quantity: 1 }] },
-    { id: 5, customer: "Luis Sánchez", date: "2023-05-19", status: "Pendiente", items: [{ productId: 9, quantity: 2 }, { productId: 10, quantity: 3 }] }
+    { id: 5, customer: "Luis Sánchez", date: "2023-05-19", status: "Pendiente", items: [{ productId: 9, quantity: 2 }, { productId: 10, quantity: 3 }] },
+    { id: 6, customer: "Elena Torres", date: "2023-05-20", status: "En proceso", items: [{ productId: 11, quantity: 1 }, { productId: 12, quantity: 2 }] },
+    { id: 7, customer: "Pedro Ramírez", date: "2023-05-21", status: "Completado", items: [{ productId: 13, quantity: 1 }, { productId: 14, quantity: 1 }] },
+    { id: 8, customer: "Laura Fernández", date: "2023-05-22", status: "Pendiente", items: [{ productId: 15, quantity: 3 }, { productId: 1, quantity: 2 }] }
 ];
 
 let supplierOrders = [
@@ -30,7 +33,9 @@ let supplierOrders = [
     { id: 2, supplier: "Materiales Construcción", date: "2023-05-12", status: "En camino", items: [{ productId: 5, quantity: 500 }, { productId: 6, quantity: 300 }] },
     { id: 3, supplier: "Pinturas y Más", date: "2023-05-14", status: "Pendiente", items: [{ productId: 11, quantity: 100 }] },
     { id: 4, supplier: "Herramientas Eléctricas", date: "2023-05-16", status: "En camino", items: [{ productId: 4, quantity: 20 }, { productId: 14, quantity: 15 }] },
-    { id: 5, supplier: "Suministros Industriales", date: "2023-05-18", status: "Pendiente", items: [{ productId: 7, quantity: 30 }, { productId: 9, quantity: 25 }] }
+    { id: 5, supplier: "Suministros Industriales", date: "2023-05-18", status: "Pendiente", items: [{ productId: 7, quantity: 30 }, { productId: 9, quantity: 25 }] },
+    { id: 6, supplier: "Ferretería Mayorista", date: "2023-05-20", status: "Recibido", items: [{ productId: 3, quantity: 40 }, { productId: 8, quantity: 50 }] },
+    { id: 7, supplier: "Distribuidora de Seguridad", date: "2023-05-22", status: "En camino", items: [{ productId: 10, quantity: 100 }, { productId: 12, quantity: 75 }] }
 ];
 
 let suppliers = [
@@ -38,7 +43,9 @@ let suppliers = [
     { id: 2, name: "Materiales Construcción", products: [5, 6, 13] },
     { id: 3, name: "Pinturas y Más", products: [11, 15] },
     { id: 4, name: "Herramientas Eléctricas", products: [4, 12, 14] },
-    { id: 5, name: "Suministros Industriales", products: [7, 8, 9, 10] }
+    { id: 5, name: "Suministros Industriales", products: [7, 8, 9, 10] },
+    { id: 6, name: "Ferretería Mayorista", products: [1, 2, 3, 5, 6, 7, 8] },
+    { id: 7, name: "Distribuidora de Seguridad", products: [10, 12, 13] }
 ];
 
 let automationTasks = [
@@ -144,6 +151,9 @@ function loadHome() {
     const pendingOrders = orders.filter(o => o.status === "Pendiente").length;
     const pendingSupplierOrders = supplierOrders.filter(o => o.status === "Pendiente").length;
     const activeAutomationTasks = automationTasks.filter(t => t.active).length;
+    const totalProducts = products.length;
+    const totalSuppliers = suppliers.length;
+    const completedOrders = orders.filter(o => o.status === "Completado").length;
 
     $('content').innerHTML = `
         <h2>Bienvenido a Ferretería Industrial S.A.</h2>
@@ -172,6 +182,18 @@ function loadHome() {
                 <h3>Tareas de Automatización Activas</h3>
                 <p>${activeAutomationTasks}</p>
             </div>
+            <div class="widget">
+                <h3>Total de Productos</h3>
+                <p>${totalProducts}</p>
+            </div>
+            <div class="widget">
+                <h3>Total de Proveedores</h3>
+                <p>${totalSuppliers}</p>
+            </div>
+            <div class="widget">
+                <h3>Pedidos Completados</h3>
+                <p>${completedOrders}</p>
+            </div>
         </div>
     `;
 }
@@ -190,8 +212,10 @@ function loadOrders() {
                     <option value="Completado">Completado</option>
                 </select>
                 <div id="orderItems"></div>
-                <button type="button" onclick="addOrderItem()">Añadir Producto</button>
-                <button type="submit">Crear Pedido</button>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="addOrderItem()"><i class="fas fa-plus"></i> Añadir Producto</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear Pedido</button>
+                </div>
             </form>
         </div>
         <div class="table-container">
@@ -215,9 +239,11 @@ function loadOrders() {
                 <td>${order.date}</td>
                 <td>${order.status}</td>
                 <td>
-                    <button onclick="showOrderDetails(${order.id})">Ver Detalles</button>
-                    <button onclick="editOrder(${order.id})">Editar</button>
-                    <button onclick="deleteOrder(${order.id})">Eliminar</button>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" onclick="showOrderDetails(${order.id})"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-primary" onclick="editOrder(${order.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteOrder(${order.id})"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
             <tr id="orderDetails${order.id}" style="display: none;">
@@ -254,7 +280,7 @@ function loadProducts() {
                 <input type="text" id="productName" placeholder="Nombre del producto" required>
                 <input type="number" id="productStock" placeholder="Stock" required>
                 <input type="number" id="productPrice" placeholder="Precio" step="0.01" required>
-                <button type="submit">Crear Producto</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear Producto</button>
             </form>
         </div>
         <div class="table-container">
@@ -278,8 +304,10 @@ function loadProducts() {
                 <td>${product.stock}</td>
                 <td>$${product.price.toFixed(2)}</td>
                 <td>
-                    <button onclick="editProduct(${product.id})">Editar</button>
-                    <button onclick="deleteProduct(${product.id})">Eliminar</button>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="editProduct(${product.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteProduct(${product.id})"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -307,8 +335,10 @@ function loadSupplierOrders() {
                     <option value="Recibido">Recibido</option>
                 </select>
                 <div id="supplierOrderItems"></div>
-                <button type="button" onclick="addSupplierOrderItem()">Añadir Producto</button>
-                <button type="submit">Crear Pedido</button>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="addSupplierOrderItem()"><i class="fas fa-plus"></i> Añadir Producto</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear Pedido</button>
+                </div>
             </form>
         </div>
         <div class="table-container">
@@ -332,9 +362,11 @@ function loadSupplierOrders() {
                 <td>${order.date}</td>
                 <td>${order.status}</td>
                 <td>
-                    <button onclick="showSupplierOrderDetails(${order.id})">Ver Detalles</button>
-                    <button onclick="editSupplierOrder(${order.id})">Editar</button>
-                    <button onclick="deleteSupplierOrder(${order.id})">Eliminar</button>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" onclick="showSupplierOrderDetails(${order.id})"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-primary" onclick="editSupplierOrder(${order.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteSupplierOrder(${order.id})"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
             <tr id="supplierOrderDetails${order.id}" style="display: none;">
@@ -1044,3 +1076,4 @@ function toggleAutomationTask(id) {
 document.addEventListener('DOMContentLoaded', function () {
     showScreen('login-screen');
 });
+
