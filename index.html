@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferretería El Tornillo Feliz</title>
+    <title>Ferretería Industrial S.A.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,7 +12,7 @@
 <body>
     <div id="login-screen" class="screen">
         <div class="login-container">
-            <h2>Iniciar Sesión</h2>
+            <img src="logo.png" alt="Logo Ferretería" class="logo">
             <form id="login-form">
                 <input type="text" id="username" placeholder="Correo electrónico o usuario" required>
                 <input type="password" id="password" placeholder="Contraseña" required>
@@ -26,35 +26,41 @@
         <nav id="sidebar">
             <div class="sidebar-header">
                 <img src="logo.png" alt="Logo Ferretería" class="logo">
-                <h3>El Tornillo Feliz</h3>
+                <h3>Ferretería Industrial S.A.</h3>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="#" data-section="home"><i class="fas fa-home"></i> Inicio</a></li>
-                <li><a href="#" data-section="orders"><i class="fas fa-shopping-cart"></i> Pedidos Clientes</a></li>
-                <li><a href="#" data-section="supplierOrders"><i class="fas fa-truck"></i> Pedidos Proveedores</a></li>
-                <li><a href="#" data-section="products"><i class="fas fa-box"></i> Productos</a></li>
-                <li><a href="#" data-section="suppliers"><i class="fas fa-industry"></i> Proveedores</a></li>
-                <li><a href="#" data-section="stats"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
-                <li><a href="#" data-section="automation"><i class="fas fa-robot"></i> Automatización</a></li>
+                <li><a href="#" data-section="home"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="#" data-section="orders"><i class="fas fa-shopping-cart"></i> <span>Pedidos Clientes</span></a></li>
+                <li><a href="#" data-section="supplierOrders"><i class="fas fa-truck"></i> <span>Pedidos Proveedores</span></a></li>
+                <li><a href="#" data-section="products"><i class="fas fa-box"></i> <span>Productos</span></a></li>
+                <li><a href="#" data-section="suppliers"><i class="fas fa-industry"></i> <span>Proveedores</span></a></li>
+                <li><a href="#" data-section="stats"><i class="fas fa-chart-bar"></i> <span>Estadísticas</span></a></li>
+                <li><a href="#" data-section="automation"><i class="fas fa-robot"></i> <span>Automatización</span></a></li>
             </ul>
         </nav>
 
-        <main>
+        <div id="main-content">
             <header>
                 <button id="toggle-sidebar"><i class="fas fa-bars"></i></button>
-                <h1>Ferretería El Tornillo Feliz</h1>
+                <h1>Ferretería Industrial S.A.</h1>
                 <div class="user-menu">
                     <span id="user-name">Usuario</span>
                     <button id="logout-btn">Cerrar Sesión</button>
                 </div>
             </header>
 
-            <div id="content">
+            <main id="content">
                 <!-- El contenido de cada sección se cargará aquí dinámicamente -->
+            </main>
+        </div>
+        <footer>
+            <div class="footer-content">
+                <img src="developer-logo.png" alt="Logo Desarrollador" class="developer-logo">
+                <p>Desarrollado por Nombre de la Empresa</p>
+                <p>Contacto: info@empresa.com | +34 123 456 789</p>
             </div>
-
-            <div id="notification-container"></div>
-        </main>
+        </footer>
+        <div id="notification-container"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -62,3 +68,4 @@
 </body>
 
 </html>
+

@@ -53,6 +53,9 @@ function $(id) { return document.getElementById(id); }
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
     $(screenId).classList.remove('hidden');
+    if (screenId === 'main-app') {
+        loadSection('home');
+    }
 }
 
 function showNotification(message) {
@@ -68,10 +71,10 @@ $('login-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const username = $('username').value;
     const password = $('password').value;
-    if (username === 'admin' && password === 'password') {
+    if (username === 'admin' && password === 'admin') {
         showScreen('main-app');
         $('user-name').textContent = username;
-        loadSection('home');
+        
     } else {
         $('login-error').textContent = 'Usuario o contraseña incorrectos';
     }
@@ -143,7 +146,7 @@ function loadHome() {
     const activeAutomationTasks = automationTasks.filter(t => t.active).length;
 
     $('content').innerHTML = `
-        <h2>Bienvenido a la Ferretería El Tornillo Feliz</h2>
+        <h2>Bienvenido a Ferretería Industrial S.A.</h2>
         <div class="widget-container">
             <div class="widget">
                 <h3>Ventas Totales del Mes</h3>
@@ -191,14 +194,18 @@ function loadOrders() {
                 <button type="submit">Crear Pedido</button>
             </form>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
     orders.forEach(order => {
         html += `
@@ -232,7 +239,7 @@ function loadOrders() {
             </tr>
         `;
     });
-    html += '</table>';
+    html += '</tbody></table></div>';
     $('content').innerHTML = html;
 
     $('orderForm').addEventListener('submit', handleOrderSubmit);
@@ -250,14 +257,18 @@ function loadProducts() {
                 <button type="submit">Crear Producto</button>
             </form>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Stock</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
     products.forEach(product => {
         html += `
@@ -273,7 +284,7 @@ function loadProducts() {
             </tr>
         `;
     });
-    html += '</table>';
+    html += '</tbody></table></div>';
     $('content').innerHTML = html;
 
     $('productForm').addEventListener('submit', handleProductSubmit);
@@ -300,14 +311,18 @@ function loadSupplierOrders() {
                 <button type="submit">Crear Pedido</button>
             </form>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Proveedor</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Proveedor</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
     supplierOrders.forEach(order => {
         html += `
@@ -337,7 +352,7 @@ function loadSupplierOrders() {
             </tr>
         `;
     });
-    html += '</table>';
+    html += '</tbody></table></div>';
     $('content').innerHTML = html;
 
     $('supplierOrderForm').addEventListener('submit', handleSupplierOrderSubmit);
@@ -356,13 +371,17 @@ function loadSuppliers() {
                 <button type="submit">Crear Proveedor</button>
             </form>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Productos</th>
-                <th>Acciones</th>
-            </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Productos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
     suppliers.forEach(supplier => {
         html += `
@@ -377,7 +396,7 @@ function loadSuppliers() {
             </tr>
         `;
     });
-    html += '</table>';
+    html += '</tbody></table></div>';
     $('content').innerHTML = html;
 
     $('supplierForm').addEventListener('submit', handleSupplierSubmit);
@@ -388,15 +407,19 @@ function loadStats() {
         <h2>Estadísticas y Reportes</h2>
         <div class="chart-container">
             <div class="chart">
+                <h3>Ventas por Mes</h3>
                 <canvas id="salesChart"></canvas>
             </div>
             <div class="chart">
+                <h3>Productos más Vendidos</h3>
                 <canvas id="productChart"></canvas>
             </div>
             <div class="chart">
+                <h3>Pedidos a Proveedores</h3>
                 <canvas id="supplierOrdersChart"></canvas>
             </div>
             <div class="chart">
+                <h3>Niveles de Inventario</h3>
                 <canvas id="inventoryChart"></canvas>
             </div>
         </div>
@@ -404,6 +427,21 @@ function loadStats() {
 
     // Gráfico de ventas por mes
     const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const productCtx = document.getElementById('productChart').getContext('2d');
+    const supplierOrdersCtx = document.getElementById('supplierOrdersChart').getContext('2d');
+    const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    };
+
+    // Aplicar chartOptions a todos los gráficos
     new Chart(salesCtx, {
         type: 'bar',
         data: {
@@ -414,19 +452,9 @@ function loadStats() {
                 backgroundColor: 'rgba(75, 192, 192, 0.6)'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+        options: chartOptions
     });
 
-    // Gráfico de productos más vendidos
-    const productCtx = document.getElementById('productChart').getContext('2d');
     new Chart(productCtx, {
         type: 'pie',
         data: {
@@ -444,14 +472,9 @@ function loadStats() {
                 ]
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+        options: chartOptions
     });
 
-    // Gráfico de pedidos a proveedores
-    const supplierOrdersCtx = document.getElementById('supplierOrdersChart').getContext('2d');
     new Chart(supplierOrdersCtx, {
         type: 'bar',
         data: {
@@ -462,20 +485,9 @@ function loadStats() {
                 backgroundColor: 'rgba(255, 159, 64, 0.6)'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    stepSize: 1
-                }
-            }
-        }
+        options: chartOptions
     });
 
-    // Gráfico de niveles de inventario
-    const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
     new Chart(inventoryCtx, {
         type: 'bar',
         data: {
@@ -486,15 +498,7 @@ function loadStats() {
                 backgroundColor: 'rgba(153, 102, 255, 0.6)'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+        options: chartOptions
     });
 }
 
@@ -518,14 +522,18 @@ function loadAutomation() {
                 <button type="submit">Crear Tarea</button>
             </form>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
     automationTasks.forEach(task => {
         html += `
@@ -542,7 +550,7 @@ function loadAutomation() {
             </tr>
         `;
     });
-    html += '</table>';
+    html += '</tbody></table></div>';
     $('content').innerHTML = html;
 
     $('automationForm').addEventListener('submit', handleAutomationSubmit);
@@ -770,9 +778,9 @@ function editSupplierOrder(id) {
                 <select class="product-select">
                     <option value="">Seleccionar producto</option>
                     ${supplier.products.map(productId => {
-                const product = products.find(p => p.id === productId);
-                return `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`;
-            }).join('')}
+                        const product = products.find(p => p.id === productId);
+                        return `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`;
+                    }).join('')}
                 </select>
                 <input type="number" class="quantity-input" placeholder="Cantidad" min="1" value="${item.quantity}">
                 <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
