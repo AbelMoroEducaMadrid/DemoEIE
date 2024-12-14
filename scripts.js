@@ -59,21 +59,26 @@ function mostrarPedidos() {
             <td>${pedido.id}</td>
             <td>${pedido.cliente}</td>
             <td>${pedido.estado}</td>
+            <td>
+                <button class="editar" data-id="${pedido.id}">Editar</button>
+                <button class="eliminar" data-id="${pedido.id}">Eliminar</button>
+            </td>
         </tr>`).join('');
 }
 
-// Mostrar productos
-function mostrarProductos() {
-    const tablaProductos = document.getElementById('tabla-productos');
-    tablaProductos.innerHTML = productos.map(producto =>
-        `<tr>
-            <td>${producto.id}</td>
-            <td>${producto.nombre}</td>
-            <td>${producto.precio}</td>
-        </tr>`).join('');
-}
+// Delegación de eventos para editar y eliminar pedidos
+document.getElementById('tabla-pedidos').addEventListener('click', function (e) {
+    const button = e.target;
+    const id = button.dataset.id;
 
-// Función para agregar un pedido
+    if (button.classList.contains('editar')) {
+        editarPedido(id);
+    } else if (button.classList.contains('eliminar')) {
+        eliminarPedido(id);
+    }
+});
+
+// Agregar un pedido
 document.getElementById('agregarPedidoBtn').addEventListener('click', function () {
     const id = prompt("Introduce el ID del pedido:");
     const cliente = prompt("Introduce el nombre del cliente:");
@@ -86,9 +91,9 @@ document.getElementById('agregarPedidoBtn').addEventListener('click', function (
     }
 });
 
-// Función para editar un pedido
+// Editar un pedido
 function editarPedido(id) {
-    const pedido = pedidos.find(p => p.id === id);
+    const pedido = pedidos.find(p => p.id === parseInt(id));
     if (pedido) {
         const clienteNuevo = prompt("Nuevo nombre del cliente:", pedido.cliente);
         const estadoNuevo = prompt("Nuevo estado del pedido:", pedido.estado);
@@ -101,9 +106,9 @@ function editarPedido(id) {
     }
 }
 
-// Función para eliminar un pedido
+// Eliminar un pedido
 function eliminarPedido(id) {
-    const index = pedidos.findIndex(p => p.id === id);
+    const index = pedidos.findIndex(p => p.id === parseInt(id));
     if (index !== -1) {
         const confirmacion = confirm("¿Estás seguro de eliminar este pedido?");
         if (confirmacion) {
@@ -112,21 +117,3 @@ function eliminarPedido(id) {
         }
     }
 }
-
-// Función para mostrar los pedidos en la tabla
-function mostrarPedidos() {
-    const tablaPedidos = document.getElementById('tabla-pedidos');
-    tablaPedidos.innerHTML = pedidos.map(pedido =>
-        `<tr>
-            <td>${pedido.id}</td>
-            <td>${pedido.cliente}</td>
-            <td>${pedido.estado}</td>
-            <td>
-                <button class="editar" onclick="editarPedido(${pedido.id})">Editar</button>
-                <button class="eliminar" onclick="eliminarPedido(${pedido.id})">Eliminar</button>
-            </td>
-        </tr>`).join('');
-}
-
-// Mostrar los pedidos inicialmente
-mostrarPedidos();

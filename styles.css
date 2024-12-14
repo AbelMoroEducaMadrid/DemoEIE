@@ -4,6 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f9;
+    color: #333;
 }
 
 header {
@@ -20,6 +21,7 @@ header {
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    transition: opacity 0.3s ease-in-out;
 }
 
 /* Login */
@@ -32,6 +34,7 @@ header {
     display: block;
 }
 
+/* Login Form */
 form {
     display: flex;
     flex-direction: column;
@@ -50,6 +53,7 @@ button {
     background-color: #007bff;
     color: white;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
@@ -65,6 +69,9 @@ nav {
 
 nav button {
     background-color: #6c757d;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
 }
 
 nav button.active-tab {
@@ -73,10 +80,12 @@ nav button.active-tab {
 
 section {
     display: none;
+    transition: opacity 0.3s ease-in-out;
 }
 
 section.active-tab {
     display: block;
+    opacity: 1;
 }
 
 /* Tablas */
@@ -97,29 +106,29 @@ table th {
     background-color: #f8f9fa;
 }
 
-/* Estilo de los botones en pedidos */
-#agregarPedidoBtn {
+/* Botones */
+#agregarPedidoBtn,
+button.editar,
+button.eliminar {
     padding: 10px 20px;
     margin-bottom: 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#agregarPedidoBtn {
+    background-color: #28a745;
+    color: white;
 }
 
 #agregarPedidoBtn:hover {
     background-color: #218838;
 }
 
-button.editar,
-button.eliminar {
+button.editar {
     background-color: #ffc107;
     color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
 }
 
 button.editar:hover {
@@ -128,6 +137,7 @@ button.editar:hover {
 
 button.eliminar {
     background-color: #dc3545;
+    color: white;
 }
 
 button.eliminar:hover {
