@@ -33,10 +33,18 @@ let supplierOrders = [
     { id: 5, supplier: "Suministros Industriales", date: "2023-05-18", status: "Pendiente", items: [{ productId: 7, quantity: 30 }, { productId: 9, quantity: 25 }] }
 ];
 
+let suppliers = [
+    { id: 1, name: "Herramientas S.A.", products: [1, 2, 3, 4] },
+    { id: 2, name: "Materiales Construcción", products: [5, 6, 13] },
+    { id: 3, name: "Pinturas y Más", products: [11, 15] },
+    { id: 4, name: "Herramientas Eléctricas", products: [4, 12, 14] },
+    { id: 5, name: "Suministros Industriales", products: [7, 8, 9, 10] }
+];
+
 let automationTasks = [
-    { id: 1, name: "Pedido automático de clavos", description: "Realizar pedido cuando el stock sea menor a 50 cajas", active: true },
-    { id: 2, name: "Reporte semanal de ventas", description: "Generar y enviar reporte todos los lunes", active: true },
-    { id: 3, name: "Actualización de precios", description: "Ajustar precios según la inflación mensual", active: false }
+    { id: 1, name: "Pedido automático de clavos", type: "restock", product: 5, threshold: 50, quantity: 500, active: true },
+    { id: 2, name: "Reporte semanal de ventas", type: "report", frequency: "weekly", day: "Monday", active: true },
+    { id: 3, name: "Actualización de precios", type: "price_update", percentage: 5, frequency: "monthly", day: 1, active: false }
 ];
 
 // Funciones de utilidad
@@ -56,7 +64,7 @@ function showNotification(message) {
 }
 
 // Manejo de login
-$('login-form').addEventListener('submit', function(e) {
+$('login-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const username = $('username').value;
     const password = $('password').value;
@@ -70,7 +78,7 @@ $('login-form').addEventListener('submit', function(e) {
 });
 
 // Manejo de logout
-$('logout-btn').addEventListener('click', function() {
+$('logout-btn').addEventListener('click', function () {
     showScreen('login-screen');
     $('username').value = '';
     $('password').value = '';
@@ -79,14 +87,14 @@ $('logout-btn').addEventListener('click', function() {
 
 // Navegación del sidebar
 document.querySelectorAll('.sidebar-menu a').forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', function (e) {
         e.preventDefault();
         loadSection(this.dataset.section);
     });
 });
 
 // Toggle del sidebar
-$('toggle-sidebar').addEventListener('click', function() {
+$('toggle-sidebar').addEventListener('click', function () {
     $('sidebar').classList.toggle('collapsed');
     $('content').classList.toggle('expanded');
 });
@@ -95,7 +103,7 @@ $('toggle-sidebar').addEventListener('click', function() {
 function loadSection(section) {
     const content = $('content');
     content.innerHTML = '';
-    switch(section) {
+    switch (section) {
         case 'home':
             loadHome();
             break;
@@ -107,6 +115,9 @@ function loadSection(section) {
             break;
         case 'products':
             loadProducts();
+            break;
+        case 'suppliers':
+            loadSuppliers();
             break;
         case 'stats':
             loadStats();
@@ -129,6 +140,7 @@ function loadHome() {
     const noStockProducts = products.filter(p => p.stock === 0).length;
     const pendingOrders = orders.filter(o => o.status === "Pendiente").length;
     const pendingSupplierOrders = supplierOrders.filter(o => o.status === "Pendiente").length;
+    const activeAutomationTasks = automationTasks.filter(t => t.active).length;
 
     $('content').innerHTML = `
         <h2>Bienvenido a la Ferretería El Tornillo Feliz</h2>
@@ -152,6 +164,10 @@ function loadHome() {
             <div class="widget">
                 <h3>Pedidos a Proveedores Pendientes</h3>
                 <p>${pendingSupplierOrders}</p>
+            </div>
+            <div class="widget">
+                <h3>Tareas de Automatización Activas</h3>
+                <p>${activeAutomationTasks}</p>
             </div>
         </div>
     `;
@@ -203,14 +219,14 @@ function loadOrders() {
                         <h4>Detalles del Pedido</h4>
                         <ul>
                             ${order.items.map(item => {
-                                const product = products.find(p => p.id === item.productId);
-                                return `<li>${product.name} - Cantidad: ${item.quantity} - Precio: $${(product.price * item.quantity).toFixed(2)}</li>`;
-                            }).join('')}
+            const product = products.find(p => p.id === item.productId);
+            return `<li>${product.name} - Cantidad: ${item.quantity} - Precio: $${(product.price * item.quantity).toFixed(2)}</li>`;
+        }).join('')}
                         </ul>
                         <p><strong>Total: $${order.items.reduce((sum, item) => {
-                            const product = products.find(p => p.id === item.productId);
-                            return sum + (product.price * item.quantity);
-                        }, 0).toFixed(2)}</strong></p>
+            const product = products.find(p => p.id === item.productId);
+            return sum + (product.price * item.quantity);
+        }, 0).toFixed(2)}</strong></p>
                     </div>
                 </td>
             </tr>
@@ -226,7 +242,7 @@ function loadProducts() {
     let html = `
         <h2>Gestión de Productos</h2>
         <div class="form-container">
-            <hh3>Nuevo Producto</h3>
+            <h3>Nuevo Producto</h3>
             <form id="productForm">
                 <input type="text" id="productName" placeholder="Nombre del producto" required>
                 <input type="number" id="productStock" placeholder="Stock" required>
@@ -263,6 +279,110 @@ function loadProducts() {
     $('productForm').addEventListener('submit', handleProductSubmit);
 }
 
+function loadSupplierOrders() {
+    let html = `
+        <h2>Gestión de Pedidos a Proveedores</h2>
+        <div class="form-container">
+            <h3>Nuevo Pedido a Proveedor</h3>
+            <form id="supplierOrderForm">
+                <select id="supplierOrderSupplier" required>
+                    <option value="">Seleccionar proveedor</option>
+                    ${suppliers.map(supplier => `<option value="${supplier.id}">${supplier.name}</option>`).join('')}
+                </select>
+                <input type="date" id="supplierOrderDate" required>
+                <select id="supplierOrderStatus">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En camino">En camino</option>
+                    <option value="Recibido">Recibido</option>
+                </select>
+                <div id="supplierOrderItems"></div>
+                <button type="button" onclick="addSupplierOrderItem()">Añadir Producto</button>
+                <button type="submit">Crear Pedido</button>
+            </form>
+        </div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Proveedor</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+    `;
+    supplierOrders.forEach(order => {
+        html += `
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.supplier}</td>
+                <td>${order.date}</td>
+                <td>${order.status}</td>
+                <td>
+                    <button onclick="showSupplierOrderDetails(${order.id})">Ver Detalles</button>
+                    <button onclick="editSupplierOrder(${order.id})">Editar</button>
+                    <button onclick="deleteSupplierOrder(${order.id})">Eliminar</button>
+                </td>
+            </tr>
+            <tr id="supplierOrderDetails${order.id}" style="display: none;">
+                <td colspan="5">
+                    <div class="order-details">
+                        <h4>Detalles del Pedido</h4>
+                        <ul>
+                            ${order.items.map(item => {
+            const product = products.find(p => p.id === item.productId);
+            return `<li>${product.name} - Cantidad: ${item.quantity}</li>`;
+        }).join('')}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    html += '</table>';
+    $('content').innerHTML = html;
+
+    $('supplierOrderForm').addEventListener('submit', handleSupplierOrderSubmit);
+    $('supplierOrderSupplier').addEventListener('change', updateSupplierOrderProducts);
+}
+
+function loadSuppliers() {
+    let html = `
+        <h2>Gestión de Proveedores</h2>
+        <div class="form-container">
+            <h3>Nuevo Proveedor</h3>
+            <form id="supplierForm">
+                <input type="text" id="supplierName" placeholder="Nombre del proveedor" required>
+                <div id="supplierProducts"></div>
+                <button type="button" onclick="addSupplierProduct()">Añadir Producto</button>
+                <button type="submit">Crear Proveedor</button>
+            </form>
+        </div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Productos</th>
+                <th>Acciones</th>
+            </tr>
+    `;
+    suppliers.forEach(supplier => {
+        html += `
+            <tr>
+                <td>${supplier.id}</td>
+                <td>${supplier.name}</td>
+                <td>${supplier.products.map(productId => products.find(p => p.id === productId).name).join(', ')}</td>
+                <td>
+                    <button onclick="editSupplier(${supplier.id})">Editar</button>
+                    <button onclick="deleteSupplier(${supplier.id})">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+    html += '</table>';
+    $('content').innerHTML = html;
+
+    $('supplierForm').addEventListener('submit', handleSupplierSubmit);
+}
+
 function loadStats() {
     $('content').innerHTML = `
         <h2>Estadísticas y Reportes</h2>
@@ -281,7 +401,7 @@ function loadStats() {
             </div>
         </div>
     `;
-    
+
     // Gráfico de ventas por mes
     const salesCtx = document.getElementById('salesChart').getContext('2d');
     new Chart(salesCtx, {
@@ -378,67 +498,6 @@ function loadStats() {
     });
 }
 
-function loadSupplierOrders() {
-    let html = `
-        <h2>Gestión de Pedidos a Proveedores</h2>
-        <div class="form-container">
-            <h3>Nuevo Pedido a Proveedor</h3>
-            <form id="supplierOrderForm">
-                <input type="text" id="supplierOrderSupplier" placeholder="Nombre del proveedor" required>
-                <input type="date" id="supplierOrderDate" required>
-                <select id="supplierOrderStatus">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En camino">En camino</option>
-                    <option value="Recibido">Recibido</option>
-                </select>
-                <div id="supplierOrderItems"></div>
-                <button type="button" onclick="addSupplierOrderItem()">Añadir Producto</button>
-                <button type="submit">Crear Pedido</button>
-            </form>
-        </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Proveedor</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-    `;
-    supplierOrders.forEach(order => {
-        html += `
-            <tr>
-                <td>${order.id}</td>
-                <td>${order.supplier}</td>
-                <td>${order.date}</td>
-                <td>${order.status}</td>
-                <td>
-                    <button onclick="showSupplierOrderDetails(${order.id})">Ver Detalles</button>
-                    <button onclick="editSupplierOrder(${order.id})">Editar</button>
-                    <button onclick="deleteSupplierOrder(${order.id})">Eliminar</button>
-                </td>
-            </tr>
-            <tr id="supplierOrderDetails${order.id}" style="display: none;">
-                <td colspan="5">
-                    <div class="order-details">
-                        <h4>Detalles del Pedido</h4>
-                        <ul>
-                            ${order.items.map(item => {
-                                const product = products.find(p => p.id === item.productId);
-                                return `<li>${product.name} - Cantidad: ${item.quantity}</li>`;
-                            }).join('')}
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-    html += '</table>';
-    $('content').innerHTML = html;
-
-    $('supplierOrderForm').addEventListener('submit', handleSupplierOrderSubmit);
-}
-
 function loadAutomation() {
     let html = `
         <h2>Automatización de Procesos</h2>
@@ -446,7 +505,13 @@ function loadAutomation() {
             <h3>Nueva Tarea de Automatización</h3>
             <form id="automationForm">
                 <input type="text" id="automationName" placeholder="Nombre de la tarea" required>
-                <textarea id="automationDescription" placeholder="Descripción de la tarea" required></textarea>
+                <select id="automationType" required>
+                    <option value="">Seleccionar tipo de tarea</option>
+                    <option value="restock">Reabastecimiento automático</option>
+                    <option value="report">Reporte automático</option>
+                    <option value="price_update">Actualización de precios</option>
+                </select>
+                <div id="automationDetails"></div>
                 <label>
                     <input type="checkbox" id="automationActive"> Activa
                 </label>
@@ -457,7 +522,7 @@ function loadAutomation() {
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
+                <th>Tipo</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -467,7 +532,7 @@ function loadAutomation() {
             <tr>
                 <td>${task.id}</td>
                 <td>${task.name}</td>
-                <td>${task.description}</td>
+                <td>${task.type}</td>
                 <td>${task.active ? 'Activa' : 'Inactiva'}</td>
                 <td>
                     <button onclick="editAutomationTask(${task.id})">Editar</button>
@@ -481,6 +546,7 @@ function loadAutomation() {
     $('content').innerHTML = html;
 
     $('automationForm').addEventListener('submit', handleAutomationSubmit);
+    $('automationType').addEventListener('change', updateAutomationForm);
 }
 
 function handleProductSubmit(e) {
@@ -507,7 +573,7 @@ function editProduct(id) {
         $('productName').value = product.name;
         $('productStock').value = product.stock;
         $('productPrice').value = product.price;
-        $('productForm').onsubmit = function(e) {
+        $('productForm').onsubmit = function (e) {
             e.preventDefault();
             product.name = $('productName').value;
             product.stock = parseInt($('productStock').value);
@@ -594,7 +660,7 @@ function editOrder(id) {
             `;
             $('orderItems').appendChild(newItem);
         });
-        $('orderForm').onsubmit = function(e) {
+        $('orderForm').onsubmit = function (e) {
             e.preventDefault();
             order.customer = $('orderCustomer').value;
             order.date = $('orderDate').value;
@@ -623,7 +689,8 @@ function deleteOrder(id) {
 
 function handleSupplierOrderSubmit(e) {
     e.preventDefault();
-    const supplier = $('supplierOrderSupplier').value;
+    const supplierId = parseInt($('supplierOrderSupplier').value);
+    const supplier = suppliers.find(s => s.id === supplierId);
     const date = $('supplierOrderDate').value;
     const status = $('supplierOrderStatus').value;
     const items = [];
@@ -638,7 +705,7 @@ function handleSupplierOrderSubmit(e) {
 
     const newOrder = {
         id: supplierOrders.length + 1,
-        supplier,
+        supplier: supplier.name,
         date,
         status,
         items
@@ -650,18 +717,37 @@ function handleSupplierOrderSubmit(e) {
 }
 
 function addSupplierOrderItem() {
+    const supplierId = parseInt($('supplierOrderSupplier').value);
+    const supplier = suppliers.find(s => s.id === supplierId);
+    if (!supplier) {
+        showNotification('Por favor, seleccione un proveedor primero');
+        return;
+    }
+
     const orderItems = $('supplierOrderItems');
     const newItem = document.createElement('div');
     newItem.className = 'supplier-order-item';
     newItem.innerHTML = `
         <select class="product-select">
             <option value="">Seleccionar producto</option>
-            ${products.map(product => `<option value="${product.id}">${product.name}</option>`).join('')}
+            ${supplier.products.map(productId => {
+        const product = products.find(p => p.id === productId);
+        return `<option value="${product.id}">${product.name}</option>`;
+    }).join('')}
         </select>
         <input type="number" class="quantity-input" placeholder="Cantidad" min="1">
         <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
     `;
     orderItems.appendChild(newItem);
+}
+
+function updateSupplierOrderProducts() {
+    const supplierId = parseInt($('supplierOrderSupplier').value);
+    const supplier = suppliers.find(s => s.id === supplierId);
+    $('supplierOrderItems').innerHTML = '';
+    if (supplier) {
+        addSupplierOrderItem();
+    }
 }
 
 function showSupplierOrderDetails(id) {
@@ -672,7 +758,8 @@ function showSupplierOrderDetails(id) {
 function editSupplierOrder(id) {
     const order = supplierOrders.find(o => o.id === id);
     if (order) {
-        $('supplierOrderSupplier').value = order.supplier;
+        const supplier = suppliers.find(s => s.name === order.supplier);
+        $('supplierOrderSupplier').value = supplier.id;
         $('supplierOrderDate').value = order.date;
         $('supplierOrderStatus').value = order.status;
         $('supplierOrderItems').innerHTML = '';
@@ -682,16 +769,21 @@ function editSupplierOrder(id) {
             newItem.innerHTML = `
                 <select class="product-select">
                     <option value="">Seleccionar producto</option>
-                    ${products.map(product => `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`).join('')}
+                    ${supplier.products.map(productId => {
+                const product = products.find(p => p.id === productId);
+                return `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`;
+            }).join('')}
                 </select>
                 <input type="number" class="quantity-input" placeholder="Cantidad" min="1" value="${item.quantity}">
                 <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
             `;
             $('supplierOrderItems').appendChild(newItem);
         });
-        $('supplierOrderForm').onsubmit = function(e) {
+        $('supplierOrderForm').onsubmit = function (e) {
             e.preventDefault();
-            order.supplier = $('supplierOrderSupplier').value;
+            const newSupplierId = parseInt($('supplierOrderSupplier').value);
+            const newSupplier = suppliers.find(s => s.id === newSupplierId);
+            order.supplier = newSupplier.name;
             order.date = $('supplierOrderDate').value;
             order.status = $('supplierOrderStatus').value;
             order.items = [];
@@ -716,17 +808,118 @@ function deleteSupplierOrder(id) {
     }
 }
 
+function handleSupplierSubmit(e) {
+    e.preventDefault();
+    const name = $('supplierName').value;
+    const productIds = [];
+
+    document.querySelectorAll('.supplier-product').forEach(item => {
+        const productId = parseInt(item.value);
+        if (productId) {
+            productIds.push(productId);
+        }
+    });
+
+    const newSupplier = {
+        id: suppliers.length + 1,
+        name,
+        products: productIds
+    };
+
+    suppliers.push(newSupplier);
+    showNotification('Proveedor creado con éxito');
+    loadSuppliers();
+}
+
+function addSupplierProduct() {
+    const supplierProducts = $('supplierProducts');
+    const newItem = document.createElement('div');
+    newItem.innerHTML = `
+        <select class="supplier-product">
+            <option value="">Seleccionar producto</option>
+            ${products.map(product => `<option value="${product.id}">${product.name}</option>`).join('')}
+        </select>
+        <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+    `;
+    supplierProducts.appendChild(newItem);
+}
+
+function editSupplier(id) {
+    const supplier = suppliers.find(s => s.id === id);
+    if (supplier) {
+        $('supplierName').value = supplier.name;
+        $('supplierProducts').innerHTML = '';
+        supplier.products.forEach(productId => {
+            const newItem = document.createElement('div');
+            newItem.innerHTML = `
+                <select class="supplier-product">
+                    <option value="">Seleccionar producto</option>
+                    ${products.map(product => `<option value="${product.id}" ${product.id === productId ? 'selected' : ''}>${product.name}</option>`).join('')}
+                </select>
+                <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+            `;
+            $('supplierProducts').appendChild(newItem);
+        });
+        $('supplierForm').onsubmit = function (e) {
+            e.preventDefault();
+            supplier.name = $('supplierName').value;
+            supplier.products = [];
+            document.querySelectorAll('.supplier-product').forEach(item => {
+                const productId = parseInt(item.value);
+                if (productId) {
+                    supplier.products.push(productId);
+                }
+            });
+            showNotification('Proveedor actualizado con éxito');
+            loadSuppliers();
+        };
+    }
+}
+
+function deleteSupplier(id) {
+    if (confirm('¿Estás seguro de que quieres eliminar este proveedor?')) {
+        suppliers = suppliers.filter(s => s.id !== id);
+        showNotification('Proveedor eliminado con éxito');
+        loadSuppliers();
+    }
+}
+
 function handleAutomationSubmit(e) {
     e.preventDefault();
     const name = $('automationName').value;
-    const description = $('automationDescription').value;
+    const type = $('automationType').value;
     const active = $('automationActive').checked;
+
+    let details = {};
+    switch (type) {
+        case 'restock':
+            details = {
+                product: parseInt($('automationProduct').value),
+                threshold: parseInt($('automationThreshold').value),
+                quantity: parseInt($('automationQuantity').value)
+            };
+            break;
+        case 'report':
+            details = {
+                frequency: $('automationFrequency').value,
+                day: $('automationDay').value
+            };
+            break;
+        case 'price_update':
+            details = {
+                percentage: parseFloat($('automationPercentage').value),
+                frequency: $('automationFrequency').value,
+                day: parseInt($('automationDay').value)
+            };
+            break;
+    }
 
     const newTask = {
         id: automationTasks.length + 1,
         name,
-        description,
-        active
+        type,
+        active,
+        ...details
     };
 
     automationTasks.push(newTask);
@@ -734,17 +927,88 @@ function handleAutomationSubmit(e) {
     loadAutomation();
 }
 
+function updateAutomationForm() {
+    const type = $('automationType').value;
+    let html = '';
+    switch (type) {
+        case 'restock':
+            html = `
+                <select id="automationProduct" required>
+                    <option value="">Seleccionar producto</option>
+                    ${products.map(product => `<option value="${product.id}">${product.name}</option>`).join('')}
+                </select>
+                <input type="number" id="automationThreshold" placeholder="Umbral de stock" required>
+                <input type="number" id="automationQuantity" placeholder="Cantidad a pedir" required>
+            `;
+            break;
+        case 'report':
+            html = `
+                <select id="automationFrequency" required>
+                    <option value="daily">Diario</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensual</option>
+                </select>
+                <input type="text" id="automationDay" placeholder="Día (lunes, 1, etc.)" required>
+            `;
+            break;
+        case 'price_update':
+            html = `
+                <input type="number" id="automationPercentage" placeholder="Porcentaje de ajuste" step="0.01" required>
+                <select id="automationFrequency" required>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensual</option>
+                </select>
+                <input type="number" id="automationDay" placeholder="Día del mes (1-31)" min="1" max="31" required>
+            `;
+            break;
+    }
+    $('automationDetails').innerHTML = html;
+}
+
 function editAutomationTask(id) {
     const task = automationTasks.find(t => t.id === id);
     if (task) {
         $('automationName').value = task.name;
-        $('automationDescription').value = task.description;
+        $('automationType').value = task.type;
         $('automationActive').checked = task.active;
-        $('automationForm').onsubmit = function(e) {
+        updateAutomationForm();
+        switch (task.type) {
+            case 'restock':
+                $('automationProduct').value = task.product;
+                $('automationThreshold').value = task.threshold;
+                $('automationQuantity').value = task.quantity;
+                break;
+            case 'report':
+                $('automationFrequency').value = task.frequency;
+                $('automationDay').value = task.day;
+                break;
+            case 'price_update':
+                $('automationPercentage').value = task.percentage;
+                $('automationFrequency').value = task.frequency;
+                $('automationDay').value = task.day;
+                break;
+        }
+        $('automationForm').onsubmit = function (e) {
             e.preventDefault();
             task.name = $('automationName').value;
-            task.description = $('automationDescription').value;
+            task.type = $('automationType').value;
             task.active = $('automationActive').checked;
+            switch (task.type) {
+                case 'restock':
+                    task.product = parseInt($('automationProduct').value);
+                    task.threshold = parseInt($('automationThreshold').value);
+                    task.quantity = parseInt($('automationQuantity').value);
+                    break;
+                case 'report':
+                    task.frequency = $('automationFrequency').value;
+                    task.day = $('automationDay').value;
+                    break;
+                case 'price_update':
+                    task.percentage = parseFloat($('automationPercentage').value);
+                    task.frequency = $('automationFrequency').value;
+                    task.day = parseInt($('automationDay').value);
+                    break;
+            }
             showNotification('Tarea de automatización actualizada con éxito');
             loadAutomation();
         };
@@ -769,6 +1033,6 @@ function toggleAutomationTask(id) {
 }
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     showScreen('login-screen');
 });
