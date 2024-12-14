@@ -33,6 +33,11 @@ body {
     text-align: center;
 }
 
+.login-container h2 {
+    margin-bottom: 1rem;
+    color: #343a40;
+}
+
 .login-container .logo {
     width: 100px;
     height: auto;
@@ -142,13 +147,6 @@ header {
     align-items: center;
 }
 
-#toggle-sidebar {
-    background: none;
-    border: none;
-    color: #343a40;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
 
 .user-menu {
     display: flex;
@@ -304,7 +302,9 @@ th {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 400px; /* Altura fija para los gráficos */
+    height: 450px; /* Aumentado de 400px a 450px */
+    display: flex;
+    flex-direction: column;
 }
 
 .chart h3 {
@@ -313,6 +313,10 @@ th {
     font-size: 1.2rem;
     color: #343a40;
     text-align: center;
+}
+
+.chart canvas {
+    flex-grow: 1;
 }
 
 /* Estilos para el footer */
@@ -336,6 +340,12 @@ footer {
 .developer-logo {
     width: 50px;
     height: auto;
+}
+
+.developed-by {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #6c757d;
 }
 
 /* Estilos responsivos */

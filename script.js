@@ -62,6 +62,9 @@ function showScreen(screenId) {
     $(screenId).classList.remove('hidden');
     if (screenId === 'main-app') {
         loadSection('home');
+        $('sidebar').style.display = 'block';
+    } else {
+        $('sidebar').style.display = 'none';
     }
 }
 
@@ -103,11 +106,6 @@ document.querySelectorAll('.sidebar-menu a').forEach(link => {
     });
 });
 
-// Toggle del sidebar
-$('toggle-sidebar').addEventListener('click', function () {
-    $('sidebar').classList.toggle('collapsed');
-    $('content').classList.toggle('expanded');
-});
 
 // Carga de secciones
 function loadSection(section) {
