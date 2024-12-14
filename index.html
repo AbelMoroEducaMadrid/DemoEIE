@@ -1,83 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo de Proyecto</title>
+    <title>Ferretería El Tornillo Feliz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-    <header>
-        <h1>Demo de Automatización</h1>
-    </header>
-
-    <!-- Login -->
-    <div class="container login-container active" id="login">
-        <h2>Inicio de Sesión</h2>
-        <form id="loginForm">
-            <label for="username">Usuario:</label>
-            <input type="text" id="username" required>
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" required>
-            <button type="submit" aria-label="Ingresar">Ingresar</button>
-        </form>
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Correo electrónico o usuario" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+            <p id="login-error" class="error-message"></p>
+        </div>
     </div>
 
-    <!-- Dashboard -->
-    <div class="container dashboard" id="dashboard">
-        <h2>Dashboard</h2>
-        <button id="logout" type="button" aria-label="Cerrar sesión">Cerrar Sesión</button>
-
-        <nav>
-            <button class="tab active-tab" data-section="inicio" type="button">Inicio</button>
-            <button class="tab" data-section="pedidos" type="button">Pedidos</button>
-            <button class="tab" data-section="productos" type="button">Productos</button>
+    <div id="main-app" class="screen hidden">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <img src="logo.png" alt="Logo Ferretería" class="logo">
+                <h3>El Tornillo Feliz</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-section="home"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="#" data-section="orders"><i class="fas fa-shopping-cart"></i> Pedidos Clientes</a></li>
+                <li><a href="#" data-section="supplierOrders"><i class="fas fa-truck"></i> Pedidos Proveedores</a></li>
+                <li><a href="#" data-section="products"><i class="fas fa-box"></i> Productos</a></li>
+                <li><a href="#" data-section="stats"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+                <li><a href="#" data-section="automation"><i class="fas fa-robot"></i> Automatización</a></li>
+            </ul>
         </nav>
 
-        <section id="inicio" class="active-tab">
-            <h3>Bienvenido al Dashboard</h3>
-            <p>Selecciona una sección para gestionar tu negocio.</p>
-        </section>
+        <main>
+            <header>
+                <button id="toggle-sidebar"><i class="fas fa-bars"></i></button>
+                <h1>Ferretería El Tornillo Feliz</h1>
+                <div class="user-menu">
+                    <span id="user-name">Usuario</span>
+                    <button id="logout-btn">Cerrar Sesión</button>
+                </div>
+            </header>
 
-        <section id="pedidos">
-            <h3>Pedidos</h3>
-            <button id="agregarPedidoBtn" type="button">Agregar Pedido</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-pedidos">
-                    <!-- Pedidos generados dinámicamente -->
-                </tbody>
-            </table>
-        </section>
+            <div id="content">
+                <!-- El contenido de cada sección se cargará aquí dinámicamente -->
+            </div>
 
-        <section id="productos">
-            <h3>Productos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Producto</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-productos">
-                    <!-- Productos generados dinámicamente -->
-                </tbody>
-            </table>
-        </section>
+            <div id="notification-container"></div>
+        </main>
     </div>
 
-    <script src="scripts.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
