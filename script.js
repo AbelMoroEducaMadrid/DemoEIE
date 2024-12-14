@@ -84,7 +84,7 @@ $('login-form').addEventListener('submit', function (e) {
     if (username === 'admin' && password === 'admin') {
         showScreen('main-app');
         $('user-name').textContent = username;
-        
+
     } else {
         $('login-error').textContent = 'Usuario o contraseña incorrectos';
     }
@@ -816,9 +816,9 @@ function editSupplierOrder(id) {
                 <select class="product-select">
                     <option value="">Seleccionar producto</option>
                     ${supplier.products.map(productId => {
-                        const product = products.find(p => p.id === productId);
-                        return `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`;
-                    }).join('')}
+                const product = products.find(p => p.id === productId);
+                return `<option value="${product.id}" ${product.id === item.productId ? 'selected' : ''}>${product.name}</option>`;
+            }).join('')}
                 </select>
                 <input type="number" class="quantity-input" placeholder="Cantidad" min="1" value="${item.quantity}">
                 <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
@@ -1083,4 +1083,3 @@ function toggleAutomationTask(id) {
 document.addEventListener('DOMContentLoaded', function () {
     showScreen('login-screen');
 });
-
