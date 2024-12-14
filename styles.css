@@ -431,3 +431,36 @@ footer {
     margin-top: 1rem;
 }
 
+/* Estilos para elementos de proveedor */
+.supplier-product-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.supplier-product-item select {
+    flex-grow: 1;
+}
+
+/* Estilos para elementos de automatización */
+#automationForm label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#automationForm input[type="checkbox"] {
+    margin: 0;
+}
+
+#automationDetails {
+    margin-bottom: 1rem;
+}
+
+#automationDetails input,
+#automationDetails select {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+

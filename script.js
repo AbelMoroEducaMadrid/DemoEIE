@@ -399,8 +399,10 @@ function loadSuppliers() {
             <form id="supplierForm">
                 <input type="text" id="supplierName" placeholder="Nombre del proveedor" required>
                 <div id="supplierProducts"></div>
-                <button type="button" onclick="addSupplierProduct()">Añadir Producto</button>
-                <button type="submit">Crear Proveedor</button>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="addSupplierProduct()"><i class="fas fa-plus"></i> Añadir Producto</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear Proveedor</button>
+                </div>
             </form>
         </div>
         <div class="table-container">
@@ -422,8 +424,10 @@ function loadSuppliers() {
                 <td>${supplier.name}</td>
                 <td>${supplier.products.map(productId => products.find(p => p.id === productId).name).join(', ')}</td>
                 <td>
-                    <button onclick="editSupplier(${supplier.id})">Editar</button>
-                    <button onclick="deleteSupplier(${supplier.id})">Eliminar</button>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="editSupplier(${supplier.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteSupplier(${supplier.id})"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -551,7 +555,7 @@ function loadAutomation() {
                 <label>
                     <input type="checkbox" id="automationActive"> Activa
                 </label>
-                <button type="submit">Crear Tarea</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear Tarea</button>
             </form>
         </div>
         <div class="table-container">
@@ -575,9 +579,13 @@ function loadAutomation() {
                 <td>${task.type}</td>
                 <td>${task.active ? 'Activa' : 'Inactiva'}</td>
                 <td>
-                    <button onclick="editAutomationTask(${task.id})">Editar</button>
-                    <button onclick="deleteAutomationTask(${task.id})">Eliminar</button>
-                    <button onclick="toggleAutomationTask(${task.id})">${task.active ? 'Desactivar' : 'Activar'}</button>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="editAutomationTask(${task.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteAutomationTask(${task.id})"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-secondary" onclick="toggleAutomationTask(${task.id})">
+                            <i class="fas ${task.active ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -760,7 +768,7 @@ function addSupplierOrderItem() {
     const supplierId = parseInt($('supplierOrderSupplier').value);
     const supplier = suppliers.find(s => s.id === supplierId);
     if (!supplier) {
-        showNotification('Por favor, seleccione un proveedor primero');
+        showNotification('Por favor, seleccione un proveedorprimero');
         return;
     }
 
@@ -776,7 +784,7 @@ function addSupplierOrderItem() {
     }).join('')}
         </select>
         <input type="number" class="quantity-input" placeholder="Cantidad" min="1">
-        <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
     `;
     orderItems.appendChild(newItem);
 }
@@ -815,7 +823,7 @@ function editSupplierOrder(id) {
                     }).join('')}
                 </select>
                 <input type="number" class="quantity-input" placeholder="Cantidad" min="1" value="${item.quantity}">
-                <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
             `;
             $('supplierOrderItems').appendChild(newItem);
         });
@@ -874,12 +882,13 @@ function handleSupplierSubmit(e) {
 function addSupplierProduct() {
     const supplierProducts = $('supplierProducts');
     const newItem = document.createElement('div');
+    newItem.className = 'supplier-product-item';
     newItem.innerHTML = `
         <select class="supplier-product">
             <option value="">Seleccionar producto</option>
             ${products.map(product => `<option value="${product.id}">${product.name}</option>`).join('')}
         </select>
-        <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
     `;
     supplierProducts.appendChild(newItem);
 }
@@ -896,7 +905,7 @@ function editSupplier(id) {
                     <option value="">Seleccionar producto</option>
                     ${products.map(product => `<option value="${product.id}" ${product.id === productId ? 'selected' : ''}>${product.name}</option>`).join('')}
                 </select>
-                <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
             `;
             $('supplierProducts').appendChild(newItem);
         });
