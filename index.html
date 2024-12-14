@@ -1,5 +1,6 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -14,7 +15,6 @@
         <h1>Demo de Automatización</h1>
     </header>
 
-    <!-- Login -->
     <div class="container login-container active" id="login">
         <h2>Inicio de Sesión</h2>
         <form id="loginForm">
@@ -24,61 +24,11 @@
             <input type="password" id="password" required>
             <button type="submit">Ingresar</button>
         </form>
+        <p>¿Olvidaste tu contraseña? <a href="#">Recuperar contraseña</a></p>
+        <p>¿No tienes cuenta? <a href="#">Registrarse</a></p>
     </div>
 
-    <!-- Dashboard -->
-    <div class="container dashboard" id="dashboard">
-        <h2>Dashboard</h2>
-        <button id="logout">Cerrar Sesión</button>
-
-        <nav>
-            <button class="tab active-tab" data-section="inicio">Inicio</button>
-            <button class="tab" data-section="pedidos">Pedidos</button>
-            <button class="tab" data-section="productos">Productos</button>
-        </nav>
-
-        <section id="inicio" class="active-tab">
-            <h3>Bienvenido al Dashboard</h3>
-            <p>Selecciona una sección para gestionar tu negocio.</p>
-        </section>
-
-        <section id="pedidos">
-            <h3>Pedidos</h3>
-            <button id="agregarPedidoBtn">Agregar Pedido</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-pedidos">
-                    <!-- Pedidos generados dinámicamente -->
-                </tbody>
-            </table>
-        </section>
-        
-
-        <section id="productos">
-            <h3>Productos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Producto</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-productos">
-                    <!-- Productos generados dinámicamente -->
-                </tbody>
-            </table>
-        </section>
-    </div>
-
-    <script src="scripts.js"></script>
-
+    <script src="login.js"></script>
 </body>
+
 </html>

@@ -1,4 +1,4 @@
-/* Estilos generales */
+/* styles.css */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -20,16 +20,6 @@ header {
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-}
-
-/* Login */
-.login-container,
-.dashboard {
-    display: none;
-}
-
-.active {
-    display: block;
 }
 
 form {
@@ -56,7 +46,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Dashboard */
 nav {
     display: flex;
     justify-content: space-around;
@@ -79,7 +68,6 @@ section.active-tab {
     display: block;
 }
 
-/* Tablas */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -95,41 +83,4 @@ table td {
 
 table th {
     background-color: #f8f9fa;
-}
-
-/* Estilo de los botones en pedidos */
-#agregarPedidoBtn {
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#agregarPedidoBtn:hover {
-    background-color: #218838;
-}
-
-button.editar,
-button.eliminar {
-    background-color: #ffc107;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-button.editar:hover {
-    background-color: #e0a800;
-}
-
-button.eliminar {
-    background-color: #dc3545;
-}
-
-button.eliminar:hover {
-    background-color: #c82333;
 }
