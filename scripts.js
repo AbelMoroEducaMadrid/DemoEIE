@@ -72,3 +72,61 @@ function mostrarProductos() {
             <td>${producto.precio}</td>
         </tr>`).join('');
 }
+
+// Función para agregar un pedido
+document.getElementById('agregarPedidoBtn').addEventListener('click', function () {
+    const id = prompt("Introduce el ID del pedido:");
+    const cliente = prompt("Introduce el nombre del cliente:");
+    const estado = prompt("Introduce el estado del pedido:");
+
+    if (id && cliente && estado) {
+        const nuevoPedido = { id: parseInt(id), cliente: cliente, estado: estado };
+        pedidos.push(nuevoPedido);
+        mostrarPedidos();
+    }
+});
+
+// Función para editar un pedido
+function editarPedido(id) {
+    const pedido = pedidos.find(p => p.id === id);
+    if (pedido) {
+        const clienteNuevo = prompt("Nuevo nombre del cliente:", pedido.cliente);
+        const estadoNuevo = prompt("Nuevo estado del pedido:", pedido.estado);
+
+        if (clienteNuevo && estadoNuevo) {
+            pedido.cliente = clienteNuevo;
+            pedido.estado = estadoNuevo;
+            mostrarPedidos();
+        }
+    }
+}
+
+// Función para eliminar un pedido
+function eliminarPedido(id) {
+    const index = pedidos.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const confirmacion = confirm("¿Estás seguro de eliminar este pedido?");
+        if (confirmacion) {
+            pedidos.splice(index, 1);
+            mostrarPedidos();
+        }
+    }
+}
+
+// Función para mostrar los pedidos en la tabla
+function mostrarPedidos() {
+    const tablaPedidos = document.getElementById('tabla-pedidos');
+    tablaPedidos.innerHTML = pedidos.map(pedido =>
+        `<tr>
+            <td>${pedido.id}</td>
+            <td>${pedido.cliente}</td>
+            <td>${pedido.estado}</td>
+            <td>
+                <button class="editar" onclick="editarPedido(${pedido.id})">Editar</button>
+                <button class="eliminar" onclick="eliminarPedido(${pedido.id})">Eliminar</button>
+            </td>
+        </tr>`).join('');
+}
+
+// Mostrar los pedidos inicialmente
+mostrarPedidos();
